@@ -1,21 +1,6 @@
 #include "startup.h"
 
-// Purpose: 	Checks to ensure input is recieved
-// Input: 		none
-// Output: 		PASS/FAIL returned
-int post(void) {
-	// Waiting for input to be sensed or time to run out
-	while (TIM2->CNT < 8000000) {
-		if ((TIM2->SR & TIM_SR_CC1IF) == TIM_SR_CC1IF) {
-			return PASS;
-		}
-	}
-	TIM2->CR1   &= ~TIM_CR1_CEN;      //Stop Counter
-	TIM2->CNT		 = 0;			  //Reset Count
-	return FAIL;
-}
-
-// Purpose: 	start of program and intialization
+// Purpose: 	start of program and intialization. Expect user input
 // Input: 		none
 // Output: 		PASS/FAIL returned.
 //				UART output
@@ -33,23 +18,13 @@ int start(void) {
 	char str[10];
 	uint8_t buffer[BufferSize];
 	uint8_t new_buffer[BufferSize];
-	if (PASS != post()) {
-		USART_Write(USART2, (uint8_t *)"Post failed. Try again? (y/n)\n\r",31);
-		rxByte = USART_Read(USART2);
-		sprintf((char *)buffer, "%c\n\r", rxByte);
-		USART_Write(USART2, buffer, 4);
-		if (rxByte == 'y' || rxByte == 'Y') {
-			timer_startup();
-			if (PASS != post()) {
-				USART_Write(USART2, (uint8_t *)"Failed again. Goodbye!\n\r", 24);
-				return FAIL;
-			}
-		}
-		else {
-			USART_Write(USART2, (uint8_t *)"Failed. Goodbye!\n\r", 18);
-			return FAIL;
-		}
-	}
+
+	// LOOP FOR USER INPUT COMMAND
+	
+	
+	// do something with user input command
+	// for each action, make sure there's an LED light value from 0->3 that relates to the 4 options
+	
 	USART_Write(USART2, (uint8_t *)"Default lower limit set to 950. Default upper limit is 1050. Change lower limit? (y/n)\n\r",88);
 	rxByte = USART_Read(USART2);
 	sprintf((char *)buffer, "%c\n\r", rxByte);
@@ -72,10 +47,6 @@ int start(void) {
 			buffer[i] = '\0';
 		}
 		USART_Write(USART2, (uint8_t *)"\n\r", 2);
-		capture_data(user_value);
-	}
-	else {
-		capture_data(950);
 	}
 	return PASS;
 }
