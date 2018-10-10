@@ -4,7 +4,8 @@
 // Input: 		none
 // Output: 		PASS/FAIL returned
 int main(void){
-	return start();
+	start();
+	return PASS;
 }
 
 
@@ -54,7 +55,13 @@ Pause - P or p
 Continue - C or c
 Right 1 - R or r
 Left 1 - L or l
-No new override - N or n
+No operation - N or n
 Begin Recipe - B or b
+
+Example User Commands:
+bb
+pP
+cc
+
 
 **************************************/
