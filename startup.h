@@ -33,7 +33,7 @@
 // This status register is key.
 // You can only continue a recipe after it's been paused
 // and a recipe can only be started if it's stopped
-int recipe_status = 0x0;
+static int recipe_status = 0x0;
 
 void start(void);
 void timer_startup(void);

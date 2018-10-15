@@ -27,16 +27,28 @@ void timer_startup(void) {
 	// CCR1 for servo 1 and CCR2 for servo 2
 	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN; 	// ensure RCC->APB1ENR1 set to right timer
 	
-	TIM2->PSC = 0; 						    					// load prescaler into TIM2->PSC register. it will be																		
+	TIM2->PSC = 79; 						    				// load prescaler into TIM2->PSC register. It will be																		
 																					// 80MHz divided by prescaler plus 1
 	TIM2->EGR |= TIM_EGR_UG;                // create an update event using the TIM2->EGR register
 	TIM2->CCER  &= ~0xFFFF;          				//Disables the input enable by clearing register
 	TIM2->CCMR1 &= ~0xFFFF;									//Clear CCMR1 register
-	TIM2->CCMR1 &= ~TIM_CCMR1_IC1F; 				//Set filter to 1st setting on page 909
-	TIM2->CCMR1 |= TIM_CCMR1_CC1S_0; 				//Set CC1 channel as input
-	TIM2->CCMR1 &= ~TIM_CCMR1_IC1PSC;
-	TIM2->CCER  |= TIM_CCER_CC1E;    				//Re-enables input enable
+	TIM2->CR1   &= ~0xFFFF;
+	
+	TIM2->CCMR1 |= TIM_CCMR1_OC1PE;					//Enables preload register
+	TIM2->CR1   |= TIM_CR1_ARPE;						//Auto reload preload register
+	TIM2->CCMR1 |= 0x00000060;							//Set PWM mode 1 (see page 907)
+	TIM2->CR1   |= 0x0010;									//Set timer in upcount mode
+	TIM2->ARR    = 20000;
+	TIM2->CCR1   = 10000;
 	TIM2->CR1   |= TIM_CR1_CEN;      				//Starts Counter
+	
+	//Set the duty cycle by loading clock cycle count into TIM2_CCR1 register
+	
+	//TIM2->CCMR1 &= ~TIM_CCMR1_IC1F; 				//Set filter to 1st setting on page 909
+	//TIM2->CCMR1 |= TIM_CCMR1_CC1S_0; 				//Set CC1 channel as input
+	//TIM2->CCMR1 &= ~TIM_CCMR1_IC1PSC;
+	//TIM2->CCER  |= TIM_CCER_CC1E;    				//Re-enables input enable
+	//TIM2->CR1   |= TIM_CR1_CEN;      				//Starts Counter
 }
 
 // Purpose: 	Setup GPIOA for output
