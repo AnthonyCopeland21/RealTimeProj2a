@@ -1,7 +1,7 @@
 #include "run.h"
 
-int recipe_servo1[20];
-int recipe_servo2[20];
+unsigned char recipe_servo1[] = {MOV | 3, MOV | 5, RECIPE_END};
+unsigned char recipe_servo2[] = {WAIT | 10, MOV | 2, RECIPE_END};
 int left_servo_position = 0;
 int right_servo_position = 0;
 
