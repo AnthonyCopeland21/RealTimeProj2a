@@ -12,7 +12,7 @@ void start(void) {
 	timer_startup();
 	output_setup();
 
-	// LOOP FOR USER INPUT COMMAND
+	// master_loop contains a loop that will run infinitely
 	// master control loop that is not blocking
 	// run once every 100ms, use timer to spin at end of loop
 	master_loop();
@@ -23,9 +23,12 @@ void start(void) {
 // Output: 		none
 void timer_startup(void) {
 	// TIM2 should be set to UP mode, 20ms to reset
+	// CCR values will drive the high and low of the PWM signal
+	// CCR1 for servo 1 and CCR2 for servo 2
 	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN; 	// ensure RCC->APB1ENR1 set to right timer
 	
-	TIM2->PSC = 0; 						    					// load prescaler into TIM2->PSC register. it will be																		// 80MHz divided by prescaler plus 1
+	TIM2->PSC = 0; 						    					// load prescaler into TIM2->PSC register. it will be																		
+																					// 80MHz divided by prescaler plus 1
 	TIM2->EGR |= TIM_EGR_UG;                // create an update event using the TIM2->EGR register
 	TIM2->CCER  &= ~0xFFFF;          				//Disables the input enable by clearing register
 	TIM2->CCMR1 &= ~0xFFFF;									//Clear CCMR1 register
@@ -42,7 +45,7 @@ void timer_startup(void) {
 void output_setup(void) {
 	// we need to setup 2 output GPIOs for the 2 signals to the 2 servos
 	
-	RCC->AHB2ENR   |=   RCC_AHB2ENR_GPIOAEN; //Enable GPIOA
+	RCC->AHB2ENR   |=   RCC_AHB2ENR_GPIOAEN; // Enable GPIOA
 	
 	GPIOA->MODER 	 &=   ~3; 				         // clear out bits 0 and 1 for PA0
 	GPIOA->MODER   &=   ~(0xF << (2*0));     // Set desired values to tie PA0
@@ -58,3 +61,6 @@ void output_setup(void) {
 // there will be 2 interupts here
 // 1st: left servo interupt, at a CCR
 // 2nd: right servo interupt, at a diff CCR
+// each interupt should check to see if the recipe has started or not
+// this can be done by checking the status register
+

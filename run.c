@@ -2,6 +2,8 @@
 
 int recipe_servo1[20];
 int recipe_servo2[20];
+int left_servo_position = 0;
+int right_servo_position = 0;
 
 // Purpose:		Loop that waits for command and runs recipes
 // Input:			None
@@ -9,7 +11,7 @@ int recipe_servo2[20];
 void master_loop(void) {
 	int i = 0;
 	char rxByte = 0;
-	char user_input[5];
+	char user_input[10];
 	uint8_t buffer[BufferSize];
 	uint8_t response_buffer[BufferSize];
 	//do stuff
@@ -22,16 +24,56 @@ void master_loop(void) {
 			i++;
 		}
 		if (rxByte == '\r') {
-			recipe_status = 0x0000;
-			// user_input will be user command. Do user command
-			// if invalid, error and let user know
+			// user_input[0] is going to be the first command
+			// user_input[1] is going to be the second command
+			
+			// left servo
+			if (user_input[0] == 'p' || user_input[0] == 'P') {
+				if ((recipe_status & 0x3) == 0x3) {
+					pause_recipe(0);
+				}
+				else {
+					// error, recipe either never started
+					// or the recipe is already paused
+				}
+			}
+			else if (user_input[0] == 'c' || user_input[0] == 'C') {
+				if ((recipe_status & 0x3) == 0x2) {
+					cont_recipe(0);
+				}
+				else {
+					// error, recipe either never started
+					// or the recipe is already paused
+				}
+			}
+			
+			// right servo
+			if (user_input[1] == 'p' || user_input[1] == 'P') {
+				if ((recipe_status & 0xC) == 0xC) {
+					pause_recipe(1);
+				}
+				else {
+					// error, recipe either never started
+					// or the recipe is already paused
+				}
+			}
+			else if (user_input[1] == 'c' || user_input[1] == 'C') {
+				if ((recipe_status & 0xC) == 0x8) {
+					cont_recipe(1);
+				}
+				else {
+					// error, recipe either never started
+					// or the recipe is already paused
+				}
+			}
 		}
 		
 		// spin for 100ms
 	}
 }
-// Purpose:		Loop that waits for command and runs recipes
-// Input:			None
+
+// Purpose:		Pause specified recipe
+// Input:			(int) left_right is an integer where 0 is the left servo and 1 is right servo
 // Output: 		None
 int pause_recipe(int left_right) {
 	if (left_right == 0){
@@ -44,8 +86,8 @@ int pause_recipe(int left_right) {
 	}
 }
 
-// Purpose:		Loop that waits for command and runs recipes
-// Input:			None
+// Purpose:		Continues a specified paused recipe 
+// Input:			(int) left_right is an integer where 0 is the left servo and 1 is right servo
 // Output: 		None
 int cont_recipe(int left_right) {
 	if(left_right == 0) {
@@ -58,16 +100,50 @@ int cont_recipe(int left_right) {
 	}
 }
 
-// Purpose:		Loop that waits for command and runs recipes
+// Purpose:		Moves specified servo 1 value to the right
 // Input:			None
 // Output: 		None
-int move_right_one(int left_right);
+int move_right_one(int left_right) {
+	if (left_right == 0) {
+		if (left_servo_position < 5) {
+			left_servo_position++;
+			//change duty cycle to move left servo 1 to the right
+		}
+		else {
+			// ERROR: CANNOT MOVE ANY MORE TO THE RIGHT
+		}	
+	}
+	else {
+		if(right_servo_position < 5) {
+			right_servo_position++;
+			//change duty cycle to move rigth servo 1 to the right
+		}
+		else {
+			// ERROR: CANNOT MOVE ANY MORE TO THE RIGHT
+		}
+	}
+}
 
-// Purpose:		Loop that waits for command and runs recipes
+// Purpose:		Moves specified servo 1 value to the left
 // Input:			None
 // Output: 		None
-int move_left_one(int left_right);
-
-// Purpose:		Loop that waits for command and runs recipes
-// Input:			None
-// Output: 		None
+int move_left_one(int left_right) {
+	if (left_right == 0) {
+		if (left_servo_position > 0) {
+			left_servo_position--;
+			//change duty cycle to move left servo 1 to the left
+		}
+		else {
+			// ERROR: CANNOT MOVE ANY MORE TO THE LEFT
+		}
+	}
+	else {
+		if(right_servo_position > 0) {
+			right_servo_position--;
+			//change duty cycle to move rigth servo 1 to the left
+		}
+		else {
+			// ERROR: CANNOT MOVE ANY MORE TO THE LEFT
+		}
+	}	
+}
