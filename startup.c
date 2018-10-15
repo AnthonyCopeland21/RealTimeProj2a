@@ -48,11 +48,11 @@ void output_setup(void) {
 	RCC->AHB2ENR   |=   RCC_AHB2ENR_GPIOAEN; // Enable GPIOA
 	
 	GPIOA->MODER 	 &=   ~3; 				         // clear out bits 0 and 1 for PA0
-	GPIOA->MODER   &=   ~(0xF << (2*0));     // Set desired values to tie PA0
-	GPIOA->MODER   |=   0x2 << (2*0);        // as an input tied to TIM2_CH1
-	GPIOA->AFR[0] &= ~(0x0000000F);
-	GPIOA->AFR[0] |= 0x00000001;
-	GPIOA->PUPDR   |=   0x2 << (2*0);
+	GPIOA->MODER   &=   ~(0xFF << (2*0));    // Set desired values to tie PA0
+	GPIOA->MODER   |=   0x22 << (2*0);       // as an alternate function tied to TIM2_CH1 and TIM2_CH2	
+	GPIOA->AFR[0]  &=   ~(0x0000000F);
+	GPIOA->AFR[0]  |=   0x00000011;
+	GPIOA->PUPDR   |=   0x22 << (2*0);
 }
 
 
