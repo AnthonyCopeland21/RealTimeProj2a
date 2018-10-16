@@ -9,8 +9,8 @@ void start(void) {
 	System_Clock_Init();
 	LED_Init();
 	UART2_Init();
-	timer_startup();
 	output_setup();
+	timer_startup();
 
 	// master_loop contains a loop that will run infinitely
 	// master control loop that is not blocking
@@ -34,7 +34,7 @@ void timer_startup(void) {
 	
 	TIM2->EGR |= TIM_EGR_UG;                // create an update event using the TIM2->EGR register
 	TIM2->CCER  &= ~0xFFFF;          				//Disables the input enable by clearing register
-	TIM2->CCMR1 &= ~0xFFFF;									//Clear CCMR1 register
+	//TIM2->CCMR1 &= ~0xFFFF;									//Clear CCMR1 register
 	TIM2->CR1   &= ~0xFFFF;
 	TIM2->CCMR1 |= TIM_CCMR1_OC1PE;					//Enables preload register
 	TIM2->CR1   |= TIM_CR1_ARPE;						//Auto reload preload register
@@ -59,6 +59,9 @@ void timer_startup(void) {
 	//TIM2->CCMR1 &= ~TIM_CCMR1_IC1PSC;
 	//TIM2->CCER  |= TIM_CCER_CC1E;    				//Re-enables input enable
 	//TIM2->CR1   |= TIM_CR1_CEN;      				//Starts Counter
+	
+	SysTick->CTRL = 0x0003;	// tickint and enable
+	SysTick->LOAD = 0;	// number of clock counts to read 100ms
 	
 }
 
