@@ -43,13 +43,13 @@ void timer_startup(void) {
 	//TIM2->DIER  |= TIM_DIER_UIE;					//Enables interrupt on update
 	TIM2->CCMR1 |= 0x00000060;							//Set PWM mode 1 (see page 907)
 	TIM2->CR1   |= 0x0010;									//Set timer in upcount mode
-	TIM2->CCR1   = 10000;
+	TIM2->CCR1   = 2000;										// first servo set to 2ms duty cycle
 	
 	TIM2->CCMR1 |= TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2;
 	
 	TIM2->CCMR1 |= TIM_CCMR1_OC2PE;					//Enables preload register
 	TIM2->CCER  |= TIM_CCER_CC2E;						//Enable output for channel 2
-	TIM2->CCR2   = 5000;
+	TIM2->CCR2   = 400;											// second servo set to 0.4ms duty cycle
 	TIM2->CR1   |= TIM_CR1_CEN;      				//Starts Counter
 	
 	//Set the duty cycle by loading clock cycle count into TIM2_CCR1 register

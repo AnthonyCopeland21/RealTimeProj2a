@@ -47,6 +47,7 @@ void master_loop(void) {
 				}
 			}
 			
+			
 			// right servo
 			if (user_input[1] == 'p' || user_input[1] == 'P') {
 				if ((recipe_status & 0xC) == 0xC) {
@@ -68,7 +69,12 @@ void master_loop(void) {
 			}
 		}
 		
+		//next commands in recipe
+		
 		// spin for 100ms
+		while(/*SysTick flag not set*/){
+			//wait for flag
+		}
 	}
 }
 
@@ -107,19 +113,23 @@ int move_right_one(int left_right) {
 	if (left_right == 0) {
 		if (left_servo_position < 5) {
 			left_servo_position++;
+			TIM2->CCR1 += 320;
 			//change duty cycle to move left servo 1 to the right
 		}
 		else {
 			// ERROR: CANNOT MOVE ANY MORE TO THE RIGHT
+			// use LEDs for errors
 		}	
 	}
 	else {
 		if(right_servo_position < 5) {
 			right_servo_position++;
+			TIM2->CCR2 += 320;
 			//change duty cycle to move rigth servo 1 to the right
 		}
 		else {
 			// ERROR: CANNOT MOVE ANY MORE TO THE RIGHT
+			// use LEDs for errors
 		}
 	}
 }
@@ -131,19 +141,23 @@ int move_left_one(int left_right) {
 	if (left_right == 0) {
 		if (left_servo_position > 0) {
 			left_servo_position--;
+			TIM2->CCR1 -= 320;
 			//change duty cycle to move left servo 1 to the left
 		}
 		else {
 			// ERROR: CANNOT MOVE ANY MORE TO THE LEFT
+			// use LEDs for errors
 		}
 	}
 	else {
 		if(right_servo_position > 0) {
 			right_servo_position--;
+			TIM2->CCR2 -= 320;
 			//change duty cycle to move rigth servo 1 to the left
 		}
 		else {
 			// ERROR: CANNOT MOVE ANY MORE TO THE LEFT
+			// use LEDs for errors
 		}
 	}	
 }
