@@ -33,32 +33,29 @@ void timer_startup(void) {
 	TIM2->CCMR1 |= TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2;
 	
 	TIM2->EGR |= TIM_EGR_UG;                // create an update event using the TIM2->EGR register
-	TIM2->CCER  &= ~0xFFFF;          				//Disables the input enable by clearing register
-	//TIM2->CCMR1 &= ~0xFFFF;									//Clear CCMR1 register
+	TIM2->CCER  &= ~0xFFFF;          				// Disables the input enable by clearing register
+	//TIM2->CCMR1 &= ~0xFFFF;								// Clear CCMR1 register
 	TIM2->CR1   &= ~0xFFFF;
-	TIM2->CCMR1 |= TIM_CCMR1_OC1PE;					//Enables preload register
-	TIM2->CR1   |= TIM_CR1_ARPE;						//Auto reload preload register
-	TIM2->CCER  |= TIM_CCER_CC1E;						//Enable output for channel 1
-	TIM2->SR    &= ~TIM_SR_UIF;							//Clears update flag
-	//TIM2->DIER  |= TIM_DIER_UIE;					//Enables interrupt on update
-	TIM2->CCMR1 |= 0x00000060;							//Set PWM mode 1 (see page 907)
-	TIM2->CR1   |= 0x0010;									//Set timer in upcount mode
-	TIM2->CCR1   = 2000;										// first servo set to 2ms duty cycle
-	
+	TIM2->CCMR1 |= TIM_CCMR1_OC1PE;					// Enables preload register
+	TIM2->CR1   |= TIM_CR1_ARPE;						// Auto reload preload register
+	TIM2->CCER  |= TIM_CCER_CC1E;						// Enable output for channel 1
+	TIM2->SR    &= ~TIM_SR_UIF;							// Clears update flag
+	//TIM2->DIER  |= TIM_DIER_UIE;					// Enables interrupt on update
+	TIM2->CCMR1 |= 0x00000060;							// Set PWM mode 1 (see page 907)
+	TIM2->CR1   |= 0x0010;									// Set timer in upcount mode
+	//CCR1 works off PA0, which should be hooked up to left servo
+	TIM2->CCR1   = 480+300*0;								// 480 is start position 0, with 300 to go between the positions
+ 	
 	TIM2->CCMR1 |= TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2;
 	
-	TIM2->CCMR1 |= TIM_CCMR1_OC2PE;					//Enables preload register
-	TIM2->CCER  |= TIM_CCER_CC2E;						//Enable output for channel 2
-	TIM2->CCR2   = 400;											// second servo set to 0.4ms duty cycle
-	TIM2->CR1   |= TIM_CR1_CEN;      				//Starts Counter
+	
+	//CCR2 works off PA1, which should be hooked up to right servo
+	TIM2->CCMR1 |= TIM_CCMR1_OC2PE;					// Enables preload register
+	TIM2->CCER  |= TIM_CCER_CC2E;						// Enable output for channel 2
+	TIM2->CCR2   = 750+300*0;								// 750 is start position 0, with 300 to go between positions
+	TIM2->CR1   |= TIM_CR1_CEN;      				// Starts Counter
 	
 	//Set the duty cycle by loading clock cycle count into TIM2_CCR1 register
-	
-	//TIM2->CCMR1 &= ~TIM_CCMR1_IC1F; 				//Set filter to 1st setting on page 909
-	//TIM2->CCMR1 |= TIM_CCMR1_CC1S_0; 				//Set CC1 channel as input
-	//TIM2->CCMR1 &= ~TIM_CCMR1_IC1PSC;
-	//TIM2->CCER  |= TIM_CCER_CC1E;    				//Re-enables input enable
-	//TIM2->CR1   |= TIM_CR1_CEN;      				//Starts Counter
 	
 	SysTick->CTRL = 0x0003;	// tickint and enable
 	SysTick->LOAD = 0;	// number of clock counts to read 100ms
@@ -82,9 +79,6 @@ void output_setup(void) {
 	GPIOA->PUPDR   |=   0x22 << (2*0);
 	
 }
-
-
-
 
 // there will be 2 interupts here
 // 1st: left servo interupt, at a CCR

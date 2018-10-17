@@ -1,5 +1,8 @@
 #include "run.h"
 
+//OUR SERVO IS GROUP3 SERVO 2015
+
+
 unsigned char recipe_servo1[] = {MOV | 3, MOV | 5, RECIPE_END};
 unsigned char recipe_servo2[] = {WAIT | 10, MOV | 2, RECIPE_END};
 int left_servo_position = 0;
@@ -71,10 +74,10 @@ void master_loop(void) {
 		
 		//next commands in recipe
 		
-		// spin for 100ms
-		while(/*SysTick flag not set*/){
+		// spin until 100ms flag is set
+	/*	while(SysTick flag not set){
 			//wait for flag
-		}
+		}*/
 	}
 }
 
@@ -113,7 +116,7 @@ int move_right_one(int left_right) {
 	if (left_right == 0) {
 		if (left_servo_position < 5) {
 			left_servo_position++;
-			TIM2->CCR1 += 320;
+			TIM2->CCR1 += SPACING;
 			//change duty cycle to move left servo 1 to the right
 		}
 		else {
@@ -124,7 +127,7 @@ int move_right_one(int left_right) {
 	else {
 		if(right_servo_position < 5) {
 			right_servo_position++;
-			TIM2->CCR2 += 320;
+			TIM2->CCR2 += SPACING;
 			//change duty cycle to move rigth servo 1 to the right
 		}
 		else {
@@ -141,7 +144,7 @@ int move_left_one(int left_right) {
 	if (left_right == 0) {
 		if (left_servo_position > 0) {
 			left_servo_position--;
-			TIM2->CCR1 -= 320;
+			TIM2->CCR1 -= SPACING;
 			//change duty cycle to move left servo 1 to the left
 		}
 		else {
@@ -152,7 +155,7 @@ int move_left_one(int left_right) {
 	else {
 		if(right_servo_position > 0) {
 			right_servo_position--;
-			TIM2->CCR2 -= 320;
+			TIM2->CCR2 -= SPACING;
 			//change duty cycle to move rigth servo 1 to the left
 		}
 		else {

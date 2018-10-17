@@ -10,6 +10,7 @@
 #define END_LOOP (0xA0)
 #define Tony_Grad_Command (0x60)
 #define Josh_Grad_Command (0xC0)
+#define SPACING (300)
 
 void master_loop(void);
 
