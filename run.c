@@ -3,7 +3,7 @@
 //OUR SERVO IS GROUP3 SERVO 2015
 
 
-unsigned char recipe_servo1[] = {MOV | 3, MOV | 5, MOV | 1, MOV | 0, MOV | 3, RECIPE_END};
+unsigned char recipe_servo1[] = {MOV | 5, LOOP | 4, MOV | 1, WAIT | 1, MOV | 2, WAIT | 2, MOV | 3, END_LOOP, MOV | 5, RECIPE_END};
 unsigned char recipe_servo2[] = {MOV | 5, MOV | 3, MOV | 1, MOV | 2, MOV | 5, MOV | 2, MOV | 0, MOV | 5, MOV | 0, RECIPE_END};
 int left_servo_position = 0;
 int right_servo_position = 0;
@@ -12,19 +12,25 @@ int right_servo_count = 0;
 int left_servo_wait = 0;
 int right_servo_wait = 0;
 	
+int left_servo_loop_location = 0;
+int right_servo_loop_location = 0;
 	
+int left_servo_loop_count = 0;
+int right_servo_loop_count = 0;
+	
+int left_servo_loop_end = 0;
+int right_servo_loop_end = 0;
 	
 // Purpose:		Loop that waits for command and runs recipes
 // Input:			None
 // Output: 		None
 void master_loop(void) {
 	int i = 0;
-
 	char rxByte = 0;
 	char user_input[10];
-	//uint8_t buffer[BufferSize];
 	uint8_t response_buffer[BufferSize];
 	USART_Write(USART2, (uint8_t *)"Hello, Welcome to Servo Fun!\n\r", 30);
+	
 	// infinite loop for 100ms breaks
 	while (1) {
 		TIM5->CR1 |= TIM_CR1_CEN;
@@ -128,9 +134,7 @@ void master_loop(void) {
 			right_servo_count++;
 		}
 		TIM5->SR &= ~TIM_SR_CC1IF | TIM_SR_CC2IF | TIM_SR_CC3IF | TIM_SR_CC4IF | TIM_SR_UIF;
-		while((TIM5->SR & TIM_SR_CC1IF) != TIM_SR_CC1IF){
-			// wait for flag to be set, that means 100ms has passed
-		}
+		while((TIM5->SR & TIM_SR_CC1IF) != TIM_SR_CC1IF){}
 		
 		//clear rxByte
 		rxByte = 0;
@@ -142,7 +146,10 @@ void master_loop(void) {
 // 						command, opcode for command
 // Output:		None
 void parse_command(int left_right, int command) {
-	if ((command & MOV) == MOV){
+	if ((command & END_LOOP) == END_LOOP){
+		end_loop(left_right);
+	}
+	else if ((command & MOV) == MOV){
 		move_to(left_right, (command&0x1F));
 	}
 	else if (command == 0x00){
@@ -159,12 +166,53 @@ void parse_command(int left_right, int command) {
 		wait(left_right, (command&0x1F));
 	}
 	else if ((command & LOOP) == LOOP){
-		move_to(left_right, (command&0x1F));
+		loop(left_right, (command&0x1F));
 	}
-	else if ((command & END_LOOP) == END_LOOP){
-		move_to(left_right, (command&0x1F));
+
+
+}
+
+// Purpose:		Loop commands set
+// Input:			left_right, 0 for left servo 1 for right servo
+//						loop_count, number of loops to go through
+// Output:		None
+void loop(int left_right, int loop_count) {
+	if (left_right == 0) {
+		left_servo_loop_end = loop_count;
+		left_servo_loop_location = left_servo_count;
+	}
+	else {
+		right_servo_loop_end = loop_count;
+		right_servo_loop_location = right_servo_count;
 	}
 }
+
+// Purpose: 	End of loop, changes location of servo counts
+// Input:			left_right, 0 for left servo 1 for right servo
+// Output:		None
+void end_loop(int left_right){
+	if (left_right == 0){
+		if (left_servo_loop_count < left_servo_loop_end) {
+			left_servo_count = left_servo_loop_location;
+			left_servo_loop_count++;
+		}
+		else {
+			left_servo_loop_count = 0;
+			left_servo_loop_location = 0;
+		}
+	}
+	else {
+		if (right_servo_loop_count < right_servo_loop_end) {
+			right_servo_count = right_servo_loop_location;
+			right_servo_loop_count++;
+		}
+		else {
+			right_servo_loop_count = 0;
+			right_servo_loop_location = 0;
+		}
+	}
+}
+
 
 // Purpose:		Start recipe
 // Input:			left_right, 0 for left servo 1 for right servo
@@ -213,7 +261,13 @@ void cont_recipe(int left_right) {
 void wait(int left_right, int time) {
 	if(left_right == 0) {
 		if (time >= 0 && time <= 31) {
-			// set left servo to wait
+			if (left_servo_wait < time){ 
+				left_servo_wait++;
+				left_servo_count--;
+			}
+			else {
+				left_servo_wait = 0;
+			}
 		}
 		else {
 			// error
@@ -221,7 +275,13 @@ void wait(int left_right, int time) {
 	}
 	else {
 		if (time >= 0 && time <= 31) {
-			// set right servo to wait
+			if (right_servo_wait < time){
+				right_servo_wait++;
+				right_servo_count--;
+			}
+			else {
+				right_servo_wait = 0;
+			}
 		}
 		else {
 			// error

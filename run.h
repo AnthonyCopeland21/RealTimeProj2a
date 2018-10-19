@@ -5,9 +5,9 @@
 
 #define MOV (0x20)						// working
 #define RECIPE_END (0x00)			// working
-#define WAIT (0x40)
-#define LOOP (0x80)
-#define END_LOOP (0xA0)
+#define WAIT (0x40)						// working
+#define LOOP (0x80)						// working
+#define END_LOOP (0xA0)				// working 
 #define Tony_Grad_Command (0x60)
 #define Josh_Grad_Command (0xC0)
 
@@ -26,6 +26,8 @@ void wait(int left_right, int time);
 void move_right_one(int left_right);
 void move_left_one(int left_right);
 void start_recipe(int left_right);
+void loop(int left_right, int loop_count);
+void end_loop(int left_right);
 
 
 #endif //  RUN_H
