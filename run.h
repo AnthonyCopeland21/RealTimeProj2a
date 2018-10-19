@@ -8,7 +8,7 @@
 #define WAIT (0x40)						// working
 #define LOOP (0x80)						// working
 #define END_LOOP (0xA0)				// working 
-#define Tony_Grad_Command (0x60)
+#define SHIFT (0x60)					// Shift, 0..1 0110 0000
 #define Josh_Grad_Command (0xC0)
 
 #define SPACING (300)

@@ -146,11 +146,28 @@ void master_loop(void) {
 // 						command, opcode for command
 // Output:		None
 void parse_command(int left_right, int command) {
-	if ((command & END_LOOP) == END_LOOP){
+	if ((command & Josh_Grad_Command) == Josh_Grad_Command) {
+		// do something
+	}
+	else if ((command & END_LOOP) == END_LOOP){
 		end_loop(left_right);
+	}
+	else if ((command & SHIFT) == SHIFT) {
+		if ((command & 0x1F) == 0) {
+			move_right_one(left_right);
+		}
+		else if ((command & 0x1F) == 1) {
+			move_left_one(left_right);
+		}
 	}
 	else if ((command & MOV) == MOV){
 		move_to(left_right, (command&0x1F));
+	}
+	else if ((command & WAIT) == WAIT){
+		wait(left_right, (command&0x1F));
+	}
+	else if ((command & LOOP) == LOOP){
+		loop(left_right, (command&0x1F));
 	}
 	else if (command == 0x00){
 		if (left_right == 0) {
@@ -162,14 +179,6 @@ void parse_command(int left_right, int command) {
 			right_servo_count = 0;
 		}
 	}
-	else if ((command & WAIT) == WAIT){
-		wait(left_right, (command&0x1F));
-	}
-	else if ((command & LOOP) == LOOP){
-		loop(left_right, (command&0x1F));
-	}
-
-
 }
 
 // Purpose:		Loop commands set
