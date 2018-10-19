@@ -6,6 +6,3 @@
 void System_Clock_Init(void);
 
 #endif /* __STM32L476G_DISCOVERY_DMA_H */
-
-
-

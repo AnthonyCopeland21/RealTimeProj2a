@@ -11,13 +11,17 @@
 #define Tony_Grad_Command (0x60)
 #define Josh_Grad_Command (0xC0)
 #define SPACING (300)
-
+#define LEFT_START (480)
+#define RIGHT_START (500)
 void master_loop(void);
 
 // each of these will change the register
-int pause_recipe(int left_right);
-int cont_recipe(int left_right);
-int move_right_one(int left_right);
-int move_left_one(int left_right);
+void parse_command(int left_right, int command);
+void pause_recipe(int left_right);
+void cont_recipe(int left_right);
+void move_to(int left_right, int position);
+void wait(int left_right, int time);
+void move_right_one(int left_right);
+void move_left_one(int left_right);
 
 #endif //  RUN_H
