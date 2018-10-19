@@ -26,32 +26,32 @@ void timer_startup(void) {
 	// TIM3 should be set to UP mode, 100ms to reset
 	// CCR values will drive the high and low of the PWM signal
 	// CCR1 for servo 1 and CCR2 for servo 2
-	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN | RCC_APB1ENR1_TIM3EN; 	// ensure RCC->APB1ENR1 set to right timer
-	TIM3->PSC = 79;
+	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN | RCC_APB1ENR1_TIM5EN; 	// ensure RCC->APB1ENR1 set to right timer
+	TIM5->PSC = 79;													// 1MHz signal with prescalar
 	TIM2->PSC = 79; 						    				// load prescaler into TIM2->PSC register. It will be																		
 																					// 80MHz divided by prescaler plus 1
 
 	TIM2->ARR    = 20000 - 1;									
-	TIM3->ARR 	 = 1000000 - 1;
+	TIM5->ARR 	 = 200000 - 1;
 	
 	TIM2->CCMR1 |= TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2;
 	
 	TIM2->EGR |= TIM_EGR_UG;                // create an update event using the TIM2->EGR register
-	TIM3->EGR |= TIM_EGR_UG;
+	TIM5->EGR |= TIM_EGR_UG;
 	TIM2->CCER  &= ~0xFFFF;          				// Disables the input enable by clearing register
 	//TIM2->CCMR1 &= ~0xFFFF;								// Clear CCMR1 register
 	TIM2->CR1   &= ~0xFFFF;
-	TIM3->CR1		&= ~0xFFFF;
+	TIM5->CR1		&= ~0xFFFF;
 	TIM2->CCMR1 |= TIM_CCMR1_OC1PE;					// Enables preload register
 	TIM2->CR1   |= TIM_CR1_ARPE;						// Auto reload preload register
-	TIM3->CR1   |= TIM_CR1_ARPE;
+	TIM5->CR1   |= TIM_CR1_ARPE;
 	TIM2->CCER  |= TIM_CCER_CC1E;						// Enable output for channel 1
 	TIM2->SR    &= ~TIM_SR_UIF;							// Clears update flag
-	TIM3->SR		&= ~TIM_SR_UIF;
+	TIM5->SR		&= ~TIM_SR_UIF;
 	//TIM2->DIER  |= TIM_DIER_UIE;					// Enables interrupt on update
 	TIM2->CCMR1 |= 0x00000060;							// Set PWM mode 1 (see page 907)
 	TIM2->CR1   |= 0x0010;									// Set timer in upcount mode
-	TIM3->CR1   |= 0x0010;
+	TIM5->CR1   |= 0x0010;
 	//CCR1 works off PA0, which should be hooked up to left servo
 	TIM2->CCR1   = LEFT_START+SPACING*0;								// 480 is start position 0, with 300 to go between the positions
  	
@@ -62,9 +62,9 @@ void timer_startup(void) {
 	TIM2->CCMR1 |= TIM_CCMR1_OC2PE;					// Enables preload register
 	TIM2->CCER  |= TIM_CCER_CC2E;						// Enable output for channel 2
 	TIM2->CCR2   = RIGHT_START+SPACING*0;								// 750 is start position 0, with 300 to go between positions
-	TIM2->CR1   |= TIM_CR1_CEN;      				// Starts Counter
+	TIM2->CR1   |= TIM_CR1_CEN;      				// Starts Counter for TIM3
 	// Set the duty cycle by loading clock cycle count into TIM2_CCR1 register
-	TIM3->CR1 	|= TIM_CR1_CEN;						//enable counter
+	//TIM5->CR1 	|= TIM_CR1_CEN;							// Starts Counter for TIM5
 }
 
 // Purpose: 	Setup GPIOA for output
