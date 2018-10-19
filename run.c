@@ -4,17 +4,22 @@
 
 
 unsigned char recipe_servo1[] = {MOV | 3, MOV | 5, MOV | 1, MOV | 0, MOV | 3, RECIPE_END};
-unsigned char recipe_servo2[] = {MOV | 5, MOV | 3, MOV | 2, MOV | 1, MOV | 5, MOV | 2, MOV | 0, MOV | 5, MOV | 0, RECIPE_END};
+unsigned char recipe_servo2[] = {MOV | 5, MOV | 3, MOV | 1, MOV | 2, MOV | 5, MOV | 2, MOV | 0, MOV | 5, MOV | 0, RECIPE_END};
 int left_servo_position = 0;
 int right_servo_position = 0;
-
+int left_servo_count = 0;
+int right_servo_count = 0;
+int left_servo_wait = 0;
+int right_servo_wait = 0;
+	
+	
+	
 // Purpose:		Loop that waits for command and runs recipes
 // Input:			None
 // Output: 		None
 void master_loop(void) {
 	int i = 0;
-	int servo1_count = 0;
-	int servo2_count = 0;
+
 	char rxByte = 0;
 	char user_input[10];
 	//uint8_t buffer[BufferSize];
@@ -64,7 +69,16 @@ void master_loop(void) {
 					start_recipe(0);
 				}
 			}
-			
+			else if (user_input[0] == 'r' || user_input[0] == 'R') {
+				if ((recipe_status & 0xC) == 0x8) {
+					move_right_one(0);
+				}
+			}
+			else if (user_input[0] == 'l' || user_input[0] == 'L') {
+				if ((recipe_status & 0xC) == 0x8) {
+					move_left_one(0);
+				}
+			}
 				
 			// RIGHT SERVO
 			if (user_input[1] == 'p' || user_input[1] == 'P') {
@@ -90,25 +104,33 @@ void master_loop(void) {
 					start_recipe(1);
 				}
 			}
+			else if (user_input[1] == 'r' || user_input[1] == 'R') {
+				if ((recipe_status & 0x3) == 0x2) {
+					move_right_one(1);
+				}
+			}
+			else if (user_input[1] == 'l' || user_input[1] == 'L') {
+				if ((recipe_status & 0x3) == 0x2) {
+					move_left_one(1);
+				}
+			}
 		}
 
 		
 		//next commands in recipe
 		//recipe_servo1 and recipe_servo2
 		if((recipe_status & 0xC) == 0xC) {
-			parse_command(0, recipe_servo1[servo1_count]);
-			servo1_count++;
+			parse_command(0, recipe_servo1[left_servo_count]);
+			left_servo_count++;
 		}
 		if((recipe_status & 0x3) == 0x3) {
-			parse_command(1, recipe_servo2[servo2_count]);
-			servo2_count++;
+			parse_command(1, recipe_servo2[right_servo_count]);
+			right_servo_count++;
 		}
 		TIM5->SR &= ~TIM_SR_CC1IF | TIM_SR_CC2IF | TIM_SR_CC3IF | TIM_SR_CC4IF | TIM_SR_UIF;
 		while((TIM5->SR & TIM_SR_CC1IF) != TIM_SR_CC1IF){
 			// wait for flag to be set, that means 100ms has passed
 		}
-
-		
 		
 		//clear rxByte
 		rxByte = 0;
@@ -124,8 +146,14 @@ void parse_command(int left_right, int command) {
 		move_to(left_right, (command&0x1F));
 	}
 	else if (command == 0x00){
-		if (left_right == 0) recipe_status &= ~0xC;
-		else recipe_status &= ~0x3;
+		if (left_right == 0) {
+			recipe_status &= ~0xC;
+			left_servo_count = 0;
+		}
+		else {
+			recipe_status &= ~0x3;
+			right_servo_count = 0;
+		}
 	}
 	else if ((command & WAIT) == WAIT){
 		wait(left_right, (command&0x1F));
@@ -185,7 +213,7 @@ void cont_recipe(int left_right) {
 void wait(int left_right, int time) {
 	if(left_right == 0) {
 		if (time >= 0 && time <= 31) {
-			// wait for time seconds
+			// set left servo to wait
 		}
 		else {
 			// error
@@ -193,7 +221,7 @@ void wait(int left_right, int time) {
 	}
 	else {
 		if (time >= 0 && time <= 31) {
-			// wait for 31 seconds
+			// set right servo to wait
 		}
 		else {
 			// error
@@ -228,19 +256,17 @@ void move_to(int left_right, int position) {
 	}
 }
 
-// Purpose:		Moves specified servo 1 value to the right
+// Purpose:		Moves specified servo 1 value to the left
 // Input:			None
 // Output: 		None
-void move_right_one(int left_right) {
+void move_left_one(int left_right) {
 	if (left_right == 0) {
 		if (left_servo_position < 5) {
 			left_servo_position++;
 			TIM2->CCR1 += SPACING;
-			//change duty cycle to move left servo 1 to the right
 		}
 		else {
 			// ERROR: CANNOT MOVE ANY MORE TO THE RIGHT
-			// use LEDs for errors
 		}	
 	}
 	else {
@@ -256,15 +282,14 @@ void move_right_one(int left_right) {
 	}
 }
 
-// Purpose:		Moves specified servo 1 value to the left
+// Purpose:		Moves specified servo 1 value to the right
 // Input:			None
 // Output: 		None
-void move_left_one(int left_right) {
+void move_right_one(int left_right) {
 	if (left_right == 0) {
 		if (left_servo_position > 0) {
 			left_servo_position--;
 			TIM2->CCR1 -= SPACING;
-			//change duty cycle to move left servo 1 to the left
 		}
 		else {
 			// ERROR: CANNOT MOVE ANY MORE TO THE LEFT
@@ -272,7 +297,7 @@ void move_left_one(int left_right) {
 		}
 	}
 	else {
-		if(right_servo_position > 0) {
+		if (right_servo_position > 0) {
 			right_servo_position--;
 			TIM2->CCR2 -= SPACING;
 			//change duty cycle to move rigth servo 1 to the left

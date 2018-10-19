@@ -3,8 +3,8 @@
 
 #include "startup.h"
 
-#define MOV (0x20)
-#define RECIPE_END (0x00)
+#define MOV (0x20)						// working
+#define RECIPE_END (0x00)			// working
 #define WAIT (0x40)
 #define LOOP (0x80)
 #define END_LOOP (0xA0)
