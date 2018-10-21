@@ -2,8 +2,8 @@
 
 //OUR SERVO IS GROUP3 SERVO 2015
 
-
-unsigned char recipe_servo1[] = {MOV | 5, LOOP | 4, MOV | 1, WAIT | 1, MOV | 2, WAIT | 2, MOV | 3, END_LOOP, MOV | 5, RECIPE_END};
+unsigned char recipe_servo1[] = {MOV, MOV | 5, MOV | 0, MOV | 3, LOOP, MOV | 0, MOV | 1, MOV | 4, END_LOOP, MOV, MOV | 2, MOV, WAIT, MOV | 3, WAIT, MOV | 2, MOV | 3, WAIT | 31, WAIT | 31, WAIT | 31, MOV 4, END_RECIPE};
+//unsigned char recipe_servo1[] = {MOV | 4, SHIFT | 1, LOOP | 4, MOV | 1, WAIT | 1, MOV | 2, SHIFT, WAIT | 2, MOV | 3, END_LOOP, MOV | 5, RECIPE_END};
 unsigned char recipe_servo2[] = {MOV | 5, MOV | 3, MOV | 1, MOV | 2, MOV | 5, MOV | 2, MOV | 0, MOV | 5, MOV | 0, RECIPE_END};
 int left_servo_position = 0;
 int right_servo_position = 0;
