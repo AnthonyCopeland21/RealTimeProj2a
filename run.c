@@ -48,6 +48,12 @@ void master_loop(void) {
 					USART_Write(USART2, (uint8_t *)"\n", 1);
 					i = 0;
 				}
+				if (rxByte == 'x' || rxByte == 'X'){
+					USART_Write(USART2, (uint8_t *)"\n\r>", 3);
+					GPIOE->ODR &= ~GPIO_ODR_ODR_8 ;
+					GPIOB->ODR &= ~GPIO_ODR_ODR_2 ;
+					i = 0;
+				}
 			}
 		}
 		if (rxByte == '\r') {			
@@ -137,7 +143,7 @@ void master_loop(void) {
 				}
 			}
 			else if ((user_input[1] == 'l' || user_input[1] == 'L') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
-				if ((recipe_status & 0x3) =! 0x3) {
+				if ((recipe_status & 0x3) != 0x3) {
 					move_left_one(1);
 				}
 			}
@@ -212,6 +218,8 @@ void loop(int left_right, int loop_count) {
 		// this condition only occurs when a nested loop occurs
 		if (left_servo_loop_location != 0) {
 			// error occurs here
+			GPIOE->ODR |= GPIO_ODR_ODR_8 ;
+			GPIOB->ODR |= GPIO_ODR_ODR_2 ;
 			recipe_status &= ~0xC;
 			left_servo_count = -1;
 			left_servo_loop_location = 0;
@@ -226,6 +234,8 @@ void loop(int left_right, int loop_count) {
 		// this condition only occurs when a nested loop occurs
 		if (right_servo_loop_location != 0) {
 			// error occurs here
+			GPIOE->ODR |= GPIO_ODR_ODR_8 ;
+			GPIOB->ODR |= GPIO_ODR_ODR_2 ;
 			recipe_status &= ~0x3;
 			right_servo_count = -1;
 			right_servo_loop_location = 0;
