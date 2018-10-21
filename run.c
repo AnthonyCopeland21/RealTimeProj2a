@@ -87,14 +87,14 @@ void master_loop(void) {
 				}
 			}
 			else if ((user_input[0] == 'r' || user_input[0] == 'R') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
-				if ((recipe_status & 0xC) == 0x8) {
+				if ((recipe_status & 0xC) != 0xC) {
 					GPIOB->ODR &= ~GPIO_ODR_ODR_2 ;
 					USART_Write(USART2, (uint8_t *)"<LF>\n\r>", 7);
 					move_right_one(0);
 				}
 			}
 			else if ((user_input[0] == 'l' || user_input[0] == 'L') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
-				if ((recipe_status & 0xC) == 0x8) {
+				if ((recipe_status & 0xC) != 0xC) {
 					GPIOB->ODR &= ~GPIO_ODR_ODR_2 ;
 					USART_Write(USART2, (uint8_t *)"<LF>\n\r>", 7);
 					move_left_one(0);
@@ -132,12 +132,12 @@ void master_loop(void) {
 				}
 			}
 			else if ((user_input[1] == 'r' || user_input[1] == 'R') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
-				if ((recipe_status & 0x3) == 0x2) {
+				if ((recipe_status & 0x3) != 0x3) {
 					move_right_one(1);
 				}
 			}
 			else if ((user_input[1] == 'l' || user_input[1] == 'L') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
-				if ((recipe_status & 0x3) == 0x2) {
+				if ((recipe_status & 0x3) =! 0x3) {
 					move_left_one(1);
 				}
 			}
