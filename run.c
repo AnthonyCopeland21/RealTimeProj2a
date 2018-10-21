@@ -29,7 +29,7 @@ void master_loop(void) {
 	char rxByte = 0;
 	char user_input[10];
 	uint8_t response_buffer[BufferSize];
-	USART_Write(USART2, (uint8_t *)"Hello, Welcome to Servo Fun!\n\r", 30);
+	USART_Write(USART2, (uint8_t *)"Hello, Welcome to Servo Fun!\n\r>", 31);
 	
 	// infinite loop for 100ms breaks
 	while (1) {
@@ -52,43 +52,64 @@ void master_loop(void) {
 		}
 		if (rxByte == '\r') {			
 			// LEFT SERVO
-			if (user_input[0] == 'p' || user_input[0] == 'P') {
+			if ((user_input[0] == 'p' || user_input[0] == 'P') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0xC) == 0xC) {
+					GPIOE->ODR &= ~GPIO_ODR_ODR_8 ;
+					GPIOB->ODR &= ~GPIO_ODR_ODR_2 ;
+					USART_Write(USART2, (uint8_t *)"<LF>\n\r>", 7);
 					pause_recipe(0);
 				}
 				else {
+					//GPIOB->ODR |= GPIO_ODR_ODR_2 ;
 					// error, recipe either never started
 					// or the recipe is already paused
 				}
 			}
-			else if (user_input[0] == 'c' || user_input[0] == 'C') {
+			else if ((user_input[0] == 'c' || user_input[0] == 'C') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0xC) == 0x8) {
+					GPIOB->ODR &= ~GPIO_ODR_ODR_2 ;
+					GPIOE->ODR |= GPIO_ODR_ODR_8 ;
+					USART_Write(USART2, (uint8_t *)"<LF>\n\r>", 7);
 					cont_recipe(0);
 				}
 				else {
+					//GPIOB->ODR |= GPIO_ODR_ODR_2 ;
 					// error, recipe either never started
 					// or the recipe is already paused
 				}
 			}
-			else if (user_input[0] == 'b' || user_input[0] == 'B') {
+			else if ((user_input[0] == 'b' || user_input[0] == 'B') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0xC) == 0x0) {
+					GPIOB->ODR &= ~GPIO_ODR_ODR_2 ;
+					GPIOE->ODR |= GPIO_ODR_ODR_8 ;
+					USART_Write(USART2, (uint8_t *)"<LF>\n\r>", 7);
 					start_recipe(0);
 				}
 			}
-			else if (user_input[0] == 'r' || user_input[0] == 'R') {
+			else if ((user_input[0] == 'r' || user_input[0] == 'R') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0xC) == 0x8) {
+					GPIOB->ODR &= ~GPIO_ODR_ODR_2 ;
+					USART_Write(USART2, (uint8_t *)"<LF>\n\r>", 7);
 					move_right_one(0);
 				}
 			}
-			else if (user_input[0] == 'l' || user_input[0] == 'L') {
+			else if ((user_input[0] == 'l' || user_input[0] == 'L') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0xC) == 0x8) {
+					GPIOB->ODR &= ~GPIO_ODR_ODR_2 ;
+					USART_Write(USART2, (uint8_t *)"<LF>\n\r>", 7);
 					move_left_one(0);
 				}
 			}
+			
+			else {
+				GPIOB->ODR |= GPIO_ODR_ODR_2 ;
+				USART_Write(USART2, (uint8_t *)"<LF>\n\r>", 7);
+			}
 				
 			// RIGHT SERVO
-			if (user_input[1] == 'p' || user_input[1] == 'P') {
+			if ((user_input[1] == 'p' || user_input[1] == 'P') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0x3) == 0x3) {
+					USART_Write(USART2, (uint8_t *)"<LF>\n\r>", 7);
 					pause_recipe(1);
 				}
 				else {
@@ -96,7 +117,7 @@ void master_loop(void) {
 					// or the recipe is already paused
 				}
 			}
-			else if (user_input[1] == 'c' || user_input[1] == 'C') {
+			else if ((user_input[1] == 'c' || user_input[1] == 'C') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0x3) == 0x2) {
 					cont_recipe(1);
 				}
@@ -105,17 +126,17 @@ void master_loop(void) {
 					// or the recipe is already paused
 				}
 			}
-			else if (user_input[1] == 'b' || user_input[1] == 'B') {
+			else if ((user_input[1] == 'b' || user_input[1] == 'B') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0x3) == 0x0) {
 					start_recipe(1);
 				}
 			}
-			else if (user_input[1] == 'r' || user_input[1] == 'R') {
+			else if ((user_input[1] == 'r' || user_input[1] == 'R') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0x3) == 0x2) {
 					move_right_one(1);
 				}
 			}
-			else if (user_input[1] == 'l' || user_input[1] == 'L') {
+			else if ((user_input[1] == 'l' || user_input[1] == 'L') && user_input[2] == '<' && user_input[3] == 'C' && user_input[4] == 'R' && user_input[5] == '>') {
 				if ((recipe_status & 0x3) == 0x2) {
 					move_left_one(1);
 				}
@@ -173,6 +194,7 @@ void parse_command(int left_right, int command) {
 		if (left_right == 0) {
 			recipe_status &= ~0xC;
 			left_servo_count = 0;
+			GPIOE->ODR &= ~GPIO_ODR_ODR_8 ;
 		}
 		else {
 			recipe_status &= ~0x3;
