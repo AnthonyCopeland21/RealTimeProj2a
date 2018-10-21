@@ -2,7 +2,8 @@
 
 //OUR SERVO IS GROUP3 SERVO 2015
 
-unsigned char recipe_servo1[] = {MOV, MOV | 5, MOV | 0, MOV | 3, LOOP, MOV | 0, MOV | 1, MOV | 4, END_LOOP, MOV, MOV | 2, MOV, WAIT, MOV | 3, WAIT, MOV | 2, MOV | 3, WAIT | 31, WAIT | 31, WAIT | 31, MOV 4, END_RECIPE};
+//unsigned char recipe_servo1[] = {WAIT | 31, WAIT | 31, WAIT | 31};
+unsigned char recipe_servo1[] = {MOV, MOV | 5, MOV | 0, MOV | 3, LOOP, MOV | 0, MOV | 1, MOV | 4, END_LOOP, MOV, MOV | 2, MOV, WAIT, MOV | 3, WAIT, MOV | 2, MOV | 3, WAIT | 31, WAIT | 31, WAIT | 31, MOV | 4, RECIPE_END};
 //unsigned char recipe_servo1[] = {MOV | 4, SHIFT | 1, LOOP | 4, MOV | 1, WAIT | 1, MOV | 2, SHIFT, WAIT | 2, MOV | 3, END_LOOP, MOV | 5, RECIPE_END};
 unsigned char recipe_servo2[] = {MOV | 5, MOV | 3, MOV | 1, MOV | 2, MOV | 5, MOV | 2, MOV | 0, MOV | 5, MOV | 0, RECIPE_END};
 int left_servo_position = 0;
@@ -50,8 +51,6 @@ void master_loop(void) {
 				}
 				if (rxByte == 'x' || rxByte == 'X'){
 					USART_Write(USART2, (uint8_t *)"\n\r>", 3);
-					GPIOE->ODR &= ~GPIO_ODR_ODR_8 ;
-					GPIOB->ODR &= ~GPIO_ODR_ODR_2 ;
 					i = 0;
 				}
 			}
@@ -322,7 +321,7 @@ void cont_recipe(int left_right) {
 void wait(int left_right, int time) {
 	if(left_right == 0) {
 		if (time >= 0 && time <= 31) {
-			if (left_servo_wait < time){ 
+			if (left_servo_wait < (time / 4)){ 
 				left_servo_wait++;
 				left_servo_count--;
 			}
@@ -336,7 +335,7 @@ void wait(int left_right, int time) {
 	}
 	else {
 		if (time >= 0 && time <= 31) {
-			if (right_servo_wait < time){
+			if (right_servo_wait < (time / 4)){
 				right_servo_wait++;
 				right_servo_count--;
 			}
