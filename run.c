@@ -209,10 +209,30 @@ void parse_command(int left_right, int command) {
 // Output:		None
 void loop(int left_right, int loop_count) {
 	if (left_right == 0) {
+		// this condition only occurs when a nested loop occurs
+		if (left_servo_loop_location != 0) {
+			// error occurs here
+			recipe_status &= ~0xC;
+			left_servo_count = -1;
+			left_servo_loop_location = 0;
+			left_servo_loop_count = 0;
+			left_servo_wait = 0;
+			return;
+		}
 		left_servo_loop_end = loop_count;
 		left_servo_loop_location = left_servo_count;
 	}
 	else {
+		// this condition only occurs when a nested loop occurs
+		if (right_servo_loop_location != 0) {
+			// error occurs here
+			recipe_status &= ~0x3;
+			right_servo_count = -1;
+			right_servo_loop_location = 0;
+			right_servo_loop_count = 0;
+			right_servo_wait = 0;
+			return;
+		}
 		right_servo_loop_end = loop_count;
 		right_servo_loop_location = right_servo_count;
 	}
