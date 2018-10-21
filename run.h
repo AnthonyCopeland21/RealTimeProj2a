@@ -10,7 +10,7 @@
 #define END_LOOP (0xA0)				// working 
 #define SHIFT (0x60)					// Anthony's Command. Shift, 0..1 0110 0000
 															// 0 to shift right, 1 to shift left
-#define Josh_Grad_Command (0xC0)
+#define JUMP (0xC0)
 
 #define SPACING (300)
 #define LEFT_START (750)    //500

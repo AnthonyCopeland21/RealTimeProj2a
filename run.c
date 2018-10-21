@@ -4,7 +4,8 @@
 
 //unsigned char recipe_servo1[] = {WAIT | 31, WAIT | 31, WAIT | 31};
 unsigned char recipe_servo1[] = {MOV, MOV | 5, MOV | 0, MOV | 3, LOOP, MOV | 0, MOV | 1, MOV | 4, END_LOOP, MOV, MOV | 2, MOV, WAIT, MOV | 3, WAIT, MOV | 2, MOV | 3, WAIT | 31, WAIT | 31, WAIT | 31, MOV | 4, RECIPE_END};
-//unsigned char recipe_servo1[] = {MOV | 4, SHIFT | 1, LOOP | 4, MOV | 1, WAIT | 1, MOV | 2, SHIFT, WAIT | 2, MOV | 3, END_LOOP, MOV | 5, RECIPE_END};
+//unsigned char recipe_servo1[] = {MOV | 4, SHIFT | 1, LOOP | 4, MOV | 1, WAIT | 1, MOV | 2, SHIFT, WAIT | 2, MOV | 3, END_LOOP, MOV | 5, RECIPE_END};  // Show Tony's grad command
+//unsigned char recipe_servo1[] = {MOV | 0, MOV | 1, JUMP | 0, MOV | 2, MOV | 3, MOV | 4, MOV | 5, RECIPE_END};                                         // Show Josh's grad command
 unsigned char recipe_servo2[] = {MOV | 5, MOV | 3, MOV | 1, MOV | 2, MOV | 5, MOV | 2, MOV | 0, MOV | 5, MOV | 0, RECIPE_END};
 int left_servo_position = 0;
 int right_servo_position = 0;
@@ -172,8 +173,13 @@ void master_loop(void) {
 // 						command, opcode for command
 // Output:		None
 void parse_command(int left_right, int command) {
-	if ((command & Josh_Grad_Command) == Josh_Grad_Command) {
-		// do something
+	if ((command & JUMP) == JUMP) {
+		if ((command & 0x1F) <= left_servo_count){
+			//Do not perform any action to avoid an infinite loop
+		}
+		else if ((command & 0x1F) > left_servo_count){
+			left_servo_count = (command & 0x1F);
+		}
 	}
 	else if ((command & END_LOOP) == END_LOOP){
 		end_loop(left_right);
