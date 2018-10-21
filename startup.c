@@ -83,6 +83,25 @@ void output_setup(void) {
 	GPIOA->AFR[0]  |=   0x00000011;
 	GPIOA->PUPDR   |=   0x22 << (2*0);
 	
+	// Enable the clock to GPIO Ports A, B, and E	
+	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN;
+	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOEEN;
+
+	// Set PB2 (red led) as output
+	GPIOB->MODER &= ~(0x03<<(2*2)) ;
+	GPIOB->MODER |= (1<<4);
+		
+	// Set PE8 (green led) as output
+	GPIOE->MODER &= ~(0x03<<(2*8));		 
+	GPIOE->MODER |= (1<<16);
+		
+	// Set PE8 and PB2 output type as push-pull
+	GPIOE->OTYPER &= ~(0x100);
+	GPIOB->OTYPER &= ~(0x4);
+	
+	// PE8 and PB2 output type as No pull-up no pull-down
+	GPIOE->PUPDR &= ~(0x30000);
+	GPIOB->PUPDR &= ~(0x30);
 }
 
 // there will be 2 interupts here
