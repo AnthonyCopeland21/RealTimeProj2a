@@ -13,8 +13,8 @@
 #define JUMP (0xC0)
 
 #define SPACING (300)
-#define LEFT_START (750)    //500
-#define RIGHT_START (500)   //750
+#define LEFT_START (550)    //500
+#define RIGHT_START (550)   //750
 
 void master_loop(void);
 
